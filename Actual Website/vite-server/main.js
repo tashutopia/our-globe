@@ -53,29 +53,6 @@ atmosphere.scale.set(1.1, 1.1, 1.1)
 
 scene.add( atmosphere );
 
-// TRIED TO CREATE DATA POINTS WITH AN ARRAY OF X,Y,Z COORDINATES, FAILED:
-
-// const dataPoint = new THREE.SphereBufferGeometry(0.1, 50, 50);
-// const dataMaterial = new THREE.PointsMaterial({ size: 1, sizeAttenuation: true, alphaTest: 0.5})
-
-// const coordinates = [[5.2, 0, 0], [3, 3, 3]]
-// const dataPoints = []
-// coordinates.forEach(pushData)
-
-// function pushData(coordInput) {
-//   let x = coordInput[0]
-//   let y = coordInput[1]
-//   let z = coordInput[2]
-//   dataPoints.push(x, y, z);
-// }
-// dataPoint.setAttribute(
-//   'position',
-//   new THREE.Float32BufferAttribute(
-//     dataPoints, 3)
-// )
-// const data = new THREE.Points(dataPoint, dataMaterial)
-// scene.add(data)
-
 
 // DATAPOINT TESTS FOR BLUE (0 N, 90 W), RED (0 N, 0 W), AND GREEN (90 N):
 
@@ -136,6 +113,53 @@ group.add(point1)
 group.add(point2)
 group.add(point3)
 group.add(pointTest)
+
+
+
+// TRIED TO CREATE DATA POINTS WITH AN ARRAY OF X,Y,Z COORDINATES, FAILED:
+
+// const dataPoint = new THREE.SphereBufferGeometry(0.1, 50, 50);
+// const dataMaterial = new THREE.PointsMaterial({ size: 1, sizeAttenuation: true, alphaTest: 0.5})
+
+// const coordinates = [[5.2, 0, 0], [3, 3, 3]]
+// const dataPoints = []
+// coordinates.forEach(pushData)
+
+// function pushData(coordInput) {
+//   let x = coordInput[0]
+//   let y = coordInput[1]
+//   let z = coordInput[2]
+//   dataPoints.push(x, y, z);
+// }
+
+// console.log(dataPoints)
+// dataPoint.setAttribute(
+//   'position',
+//   new THREE.Float32BufferAttribute(
+//     dataPoints, 3)
+// )
+// console.log(dataPoint)
+// const data = new THREE.Points(dataPoint, dataMaterial)
+// scene.add(data)
+
+const coordinates = [[5.2, 0, 0], [3, 3, 3]]
+coordinates.push([1, 1, 1])
+console.log(coordinates)
+
+function addPoint() {
+  for (let i = 0; i < coordinates.length; i++) {
+    var newPoint = new THREE.Mesh(
+      new THREE.SphereBufferGeometry(0.1, 50, 50),
+      new THREE.MeshBasicMaterial({color:0xffffff})
+    )
+  
+    newPoint.position.set(coordinates[i][0], coordinates[i][1], coordinates[i][2])
+    scene.add(newPoint)
+    group.add(newPoint)
+  }
+}
+
+addPoint()
 
 
 // CREATES STARS:
