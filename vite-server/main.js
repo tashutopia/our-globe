@@ -110,12 +110,10 @@ scene.add(pointTest)
 const group = new THREE.Group()
 // group.add(data)
 group.add(sphere)
-scene.add(group)
 group.add(point1)
 group.add(point2)
 group.add(point3)
 group.add(pointTest)
-
 
 
 // TRIED TO CREATE DATA POINTS WITH AN ARRAY OF X,Y,Z COORDINATES, FAILED:
@@ -146,9 +144,9 @@ group.add(pointTest)
 
 const coordinates = [[5.2, 0, 0], [3, 3, 3]]
 coordinates.push([1, 1, 1])
-console.log(coordinates)
 
 function addPoint() {
+  console.log('added')
   for (let i = 0; i < coordinates.length; i++) {
     var newPoint = new THREE.Mesh(
       new THREE.SphereBufferGeometry(0.1, 50, 50),
@@ -156,13 +154,14 @@ function addPoint() {
     )
   
     newPoint.position.set(coordinates[i][0], coordinates[i][1], coordinates[i][2])
-    scene.add(newPoint)
+    newPoint.geometry.attributes.position.needsUpdate = true;
     group.add(newPoint)
+
   }
 }
+document.getElementById("populateButton").addEventListener('click', addPoint)
 
-addPoint()
-
+scene.add(group)
 
 // CREATES STARS:
 
@@ -206,12 +205,12 @@ let moving = false
 
 addEventListener('mousedown', () => {
   moving = true
-  console.log(moving)
+  // console.log(moving)
 })
 
 addEventListener('mouseup', () => {
   moving = false
-  console.log(moving)
+  // console.log(moving)
 })
 
 function animate() {

@@ -8,3 +8,10 @@
 body {
   margin: 0px;
 }
+
+#populateButton {
+  position: absolute;
+  margin-top: 50px;
+  margin-left: 20px;
+  font-size: 25px;
+}
