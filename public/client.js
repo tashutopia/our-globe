@@ -12,12 +12,14 @@ const renderer = new THREE.WebGLRenderer( {
   antialias: true
 });
 
-
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setPixelRatio(devicePixelRatio)
 document.body.appendChild( renderer.domElement );
-// GLOBE ITSELF:
 
+const controls = new OrbitControls (camera, renderer.domElement)
+
+
+// GLOBE ITSELF:
 const geometry = new THREE.SphereGeometry(5, 50, 50);
 // const material = new THREE.MeshBasicMaterial( {
 //   map: new THREE.TextureLoader().load('./imgs/uvmap.jpg')
