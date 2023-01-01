@@ -21,9 +21,6 @@ const controls = new OrbitControls (camera, renderer.domElement)
 
 // GLOBE ITSELF:
 const geometry = new THREE.SphereGeometry(5, 50, 50);
-// const material = new THREE.MeshBasicMaterial( {
-//   map: new THREE.TextureLoader().load('./imgs/uvmap.jpg')
-// } );
 const shaderMaterial = new THREE.ShaderMaterial({
   vertexShader,
   fragmentShader,
@@ -115,31 +112,6 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
   group.add(pointTest)
   
   
-  // TRIED TO CREATE DATA POINTS WITH AN ARRAY OF X,Y,Z COORDINATES, FAILED:
-  
-  // const dataPoint = new THREE.SphereBufferGeometry(0.1, 50, 50);
-  // const dataMaterial = new THREE.PointsMaterial({ size: 1, sizeAttenuation: true, alphaTest: 0.5})
-  
-  // const coordinates = [[5.2, 0, 0], [3, 3, 3]]
-  // const dataPoints = []
-  // coordinates.forEach(pushData)
-  
-  // function pushData(coordInput) {
-  //   let x = coordInput[0]
-  //   let y = coordInput[1]
-  //   let z = coordInput[2]
-  //   dataPoints.push(x, y, z);
-  // }
-  
-  // console.log(dataPoints)
-  // dataPoint.setAttribute(
-  //   'position',
-  //   new THREE.Float32BufferAttribute(
-  //     dataPoints, 3)
-  // )
-  // console.log(dataPoint)
-  // const data = new THREE.Points(dataPoint, dataMaterial)
-  // scene.add(data)
   
   const coordinates = [[5.2, 0, 0], [3, 3, 3]]
   coordinates.push([1, 1, 1])
