@@ -34,7 +34,6 @@ const sphere = new THREE.Mesh(
   geometry, shaderMaterial 
 );
 
-
 // CREATE ATMOSPHERE:
 
 const shaderMaterialAtm = new THREE.ShaderMaterial({
@@ -54,29 +53,29 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
   
   // DATAPOINT TESTS FOR BLUE (0 N, 90 W), RED (0 N, 0 W), AND GREEN (90 N):
   
-  const point1 = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(0.1, 50, 50),
-    new THREE.MeshBasicMaterial({color:0xff0000})
-  )
+  // const point1 = new THREE.Mesh(
+  //   new THREE.SphereBufferGeometry(0.1, 50, 50),
+  //   new THREE.MeshBasicMaterial({color:0xff0000})
+  // )
   
-  point1.position.set(5.2, 0, 0)
-  scene.add(point1)
+  // point1.position.set(5.2, 0, 0)
+  // scene.add(point1)
   
-  const point2 = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(0.1, 50, 50),
-    new THREE.MeshBasicMaterial({color:0x00ff00})
-  )
+  // const point2 = new THREE.Mesh(
+  //   new THREE.SphereBufferGeometry(0.1, 50, 50),
+  //   new THREE.MeshBasicMaterial({color:0x00ff00})
+  // )
   
-  point2.position.set(0, 5.2, 0)
-  scene.add(point2)
+  // point2.position.set(0, 5.2, 0)
+  // scene.add(point2)
   
-  const point3 = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(0.1, 50, 50),
-    new THREE.MeshBasicMaterial({color:0x0000ff})
-  )
+  // const point3 = new THREE.Mesh(
+  //   new THREE.SphereBufferGeometry(0.1, 50, 50),
+  //   new THREE.MeshBasicMaterial({color:0x0000ff})
+  // )
   
-  point3.position.set(0, 0, 5.2)
-  scene.add(point3)
+  // point3.position.set(0, 0, 5.2)
+  // scene.add(point3)
   
   
   // DATAPOINT TEST FOR LONGITUDE AND LATITUDE (FLORIDA):
@@ -106,32 +105,86 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
   const group = new THREE.Group()
   // group.add(data)
   group.add(sphere)
-  group.add(point1)
-  group.add(point2)
-  group.add(point3)
+  // group.add(point1)
+  // group.add(point2)
+  // group.add(point3)
   group.add(pointTest)
   
   
   
-  const coordinates = [[5.2, 0, 0], [3, 3, 3]]
-  coordinates.push([1, 1, 1])
-  
-  function addPoint() {
-    console.log('added')
+  const coordinates = [[5.2, 0, 0], [0, 5.2, 0], [0, 0, 5.2]]
+
+  async function addPoints() {
     for (let i = 0; i < coordinates.length; i++) {
+      await fetch('http://127.0.0.1:3000/points', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "coordinateX": coordinates[i][0],
+          "coordinateY": coordinates[i][1],
+          "coordinateZ": coordinates[i][2]
+        })
+        })
+    }
+  }
+
+  var dbCoordinates = []
+  async function getPoints() {
+    await addPoints()
+    dbCoordinates = []
+    await fetch('http://127.0.0.1:3000/points', {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      }
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        data.forEach(point => {
+          dbCoordinates.push([point.coordinateX, point.coordinateY, point.coordinateZ])
+        })
+
+      })
+  }
+  
+  async function displayPoints() {
+    await getPoints()
+    for (let i = 0; i < dbCoordinates.length; i++) {
       var newPoint = new THREE.Mesh(
         new THREE.SphereBufferGeometry(0.1, 50, 50),
         new THREE.MeshBasicMaterial({color:0xffffff})
       )
     
-      newPoint.position.set(coordinates[i][0], coordinates[i][1], coordinates[i][2])
+      newPoint.position.set(dbCoordinates[i][0], dbCoordinates[i][1], dbCoordinates[i][2])
       newPoint.geometry.attributes.position.needsUpdate = true;
       group.add(newPoint)
   
     }
   }
-  document.getElementById("populateButton").addEventListener('click', addPoint)
-  
+
+  function getAndDisplayPoints() {
+    getPoints()
+    displayPoints()
+  }
+
+  async function deletePoints() {
+    await fetch('http://127.0.0.1:3000/points', {
+      method: 'DELETE',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      }
+      })
+  }
+
+  document.getElementById("populateButton").addEventListener('click', addPoints)
+  document.getElementById("displayButton").addEventListener('click', getAndDisplayPoints)
+  document.getElementById("clearButton").addEventListener('click', deletePoints)
+
   scene.add(group)
   
   // CREATES STARS:
