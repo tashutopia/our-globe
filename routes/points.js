@@ -1,6 +1,5 @@
 const express = require('express')
 const req = require('express/lib/request')
-const point = require('../models/point')
 const router = express.Router()
 const Point = require('../models/point')
 
@@ -37,8 +36,9 @@ router.post('/', async(req, res) => {
 //deleting, clearing database
 router.delete('/', async(req, res) => {
     try {
-        await point.deleteMany()
-        res.status(200)
+        await Point.deleteMany()
+        const points = await Point.find()
+        res.json(points)
     } catch (err) {
         res.status(500).json( {message: err.message} )
     }
