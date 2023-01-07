@@ -240,15 +240,15 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
   })
 
   var raycaster = new THREE.Raycaster()
-  var currentMouse = new THREE.Vector2()
   async function onMouseClick() {
 
     var idOfClicked, clickedPoint = false
-    raycaster.setFromCamera(currentMouse, camera)
+    raycaster.setFromCamera(mouse, camera)
     for (let i = 0; i < pointMeshs.length; i++) {
       if ((raycaster.intersectObject(pointMeshs[i], true)).length > 0) {
         idOfClicked = pointMeshs[i].userData.id
         clickedPoint = true
+        console.log("clicked")
         break
       }
     }
