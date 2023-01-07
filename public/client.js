@@ -111,7 +111,7 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
   group.add(pointTest)
   
   
-  
+  //not including id, after points are posted to database, mongoose will automatically assign ID
   const coordinates = [[5.2, 0, 0], [0, 5.2, 0], [0, 0, 5.2]]
 
   async function addPoints() {
@@ -129,11 +129,12 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
         })
         })
     }
+
   }
 
+  //this dbCoordinates array will contain the id of points fetched from database
   var dbCoordinates = []
   async function getPoints() {
-    await addPoints()
     dbCoordinates = []
     await fetch('http://127.0.0.1:3000/points', {
       method: 'GET',
@@ -145,12 +146,13 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
       .then((response) => response.json())
       .then((data) => {
         data.forEach(point => {
-          dbCoordinates.push([point.coordinateX, point.coordinateY, point.coordinateZ])
+          dbCoordinates.push([[point.coordinateX, point.coordinateY, point.coordinateZ], point._id])
         })
 
       })
+
   }
-  
+  var pointMeshs = []
   async function displayPoints() {
     await getPoints()
     for (let i = 0; i < dbCoordinates.length; i++) {
@@ -158,16 +160,16 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
         new THREE.SphereBufferGeometry(0.1, 50, 50),
         new THREE.MeshBasicMaterial({color:0xffffff})
       )
-    
-      newPoint.position.set(dbCoordinates[i][0], dbCoordinates[i][1], dbCoordinates[i][2])
+      newPoint.userData.id = dbCoordinates[i][1]
+      newPoint.position.set(dbCoordinates[i][0][0], dbCoordinates[i][0][1], dbCoordinates[i][0][2])
       newPoint.geometry.attributes.position.needsUpdate = true;
+      pointMeshs.push(newPoint)
       group.add(newPoint)
-  
+
     }
   }
 
   function getAndDisplayPoints() {
-    getPoints()
     displayPoints()
   }
 
@@ -179,6 +181,7 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
           'Content-Type': 'application/json'
       }
       })
+
   }
 
   document.getElementById("populateButton").addEventListener('click', addPoints)
@@ -229,13 +232,47 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
   
   addEventListener('mousedown', () => {
     moving = true
-    // console.log(moving)
   })
   
   addEventListener('mouseup', () => {
     moving = false
     // console.log(moving)
   })
+
+  var raycaster = new THREE.Raycaster()
+  var currentMouse = new THREE.Vector2()
+  async function onMouseClick() {
+
+    var idOfClicked, clickedPoint = false
+    raycaster.setFromCamera(currentMouse, camera)
+    for (let i = 0; i < pointMeshs.length; i++) {
+      if ((raycaster.intersectObject(pointMeshs[i], true)).length > 0) {
+        idOfClicked = pointMeshs[i].userData.id
+        clickedPoint = true
+        break
+      }
+    }
+
+    if (clickedPoint) {
+      var pointData = []
+      await fetch('http://127.0.0.1:3000/points/' + idOfClicked, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+        })
+        .then((response) => response.json())
+        .then((data) => {
+          pointData.push([data.coordinateX, data.coordinateY, data.coordinateZ])
+        })
+        
+        console.log(pointData)
+    }
+  
+  }
+
+  window.addEventListener('click', onMouseClick, false)
   
   function animate() {
     requestAnimationFrame( animate );

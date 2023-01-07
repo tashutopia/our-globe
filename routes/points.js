@@ -16,6 +16,19 @@ router.get('/', async (req, res) => {
     }
 })
 
+//get by mongoose id. id is a parameter -- not part of a query string
+router.get('/:id', async (req, res) => {
+    try {
+        const point = await Point.findOne({
+            _id: req.params.id
+        })
+        res.json(point)
+    } catch (err) {
+        res.status(500).json( {message: err.message} )
+    }
+
+})
+
 //adding one point 
 router.post('/', async(req, res) => {
     const point = new Point({
