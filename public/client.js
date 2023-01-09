@@ -152,7 +152,7 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
       })
 
   }
-  var pointMeshs = []
+
   async function displayPoints() {
     await getPoints()
     for (let i = 0; i < dbCoordinates.length; i++) {
@@ -163,15 +163,11 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
       newPoint.userData.id = dbCoordinates[i][1]
       newPoint.position.set(dbCoordinates[i][0][0], dbCoordinates[i][0][1], dbCoordinates[i][0][2])
       newPoint.geometry.attributes.position.needsUpdate = true;
-      pointMeshs.push(newPoint)
       group.add(newPoint)
 
     }
   }
 
-  function getAndDisplayPoints() {
-    displayPoints()
-  }
 
   async function deletePoints() {
     await fetch('http://127.0.0.1:3000/points', {
@@ -185,7 +181,7 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
   }
 
   document.getElementById("populateButton").addEventListener('click', addPoints)
-  document.getElementById("displayButton").addEventListener('click', getAndDisplayPoints)
+  document.getElementById("displayButton").addEventListener('click', displayPoints)
   document.getElementById("clearButton").addEventListener('click', deletePoints)
 
   scene.add(group)
@@ -239,13 +235,17 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
     // console.log(moving)
   })
 
+  //see which point you clicked on
   var raycaster = new THREE.Raycaster()
   async function onMouseClick() {
 
-    var idOfClicked, clickedPoint = false
+    var idOfClicked = null, clickedPoint = false
     raycaster.setFromCamera(mouse, camera)
-    for (let i = 0; i < pointMeshs.length; i++) {
-      if ((raycaster.intersectObject(pointMeshs[i], true)).length > 0) {
+    var pointMeshs = scene.children[1].children //this is hardcoding in the child of the scene which contains the point group
+
+    //have to start at 1 because index 0 of the point group is the globe itself
+    for (let i = 1; i < pointMeshs.length; i++) {
+      if ((raycaster.intersectObject(pointMeshs[i])).length > 0) {
         idOfClicked = pointMeshs[i].userData.id
         clickedPoint = true
         console.log("clicked")
@@ -266,7 +266,7 @@ const shaderMaterialAtm = new THREE.ShaderMaterial({
         .then((data) => {
           pointData.push([data.coordinateX, data.coordinateY, data.coordinateZ])
         })
-        
+        //temporary because there is nothing else to do with the point data 
         console.log(pointData)
     }
   
